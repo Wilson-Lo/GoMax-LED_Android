@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_system"
+        android:title="System"
+        android:icon="@drawable/ic_launcher_foreground"/>
+    <item
+        android:id="@+id/nav_gif"
+        android:title="GIF"
+        android:icon="@drawable/ic_launcher_foreground"/>
+    <item
+        android:id="@+id/nav_settings"
+        android:title="Settings"
+        android:icon="@drawable/ic_launcher_foreground"/>
+</menu>
