@@ -17,4 +17,8 @@ public class FragmentHelper {
     public final static int FRAGMENT_EVENT_SET_BACKGROUND_RGB = 1006;
     public final static int FRAGMENT_EVENT_SET_TEXT_RGB = 1007;
     public final static int FRAGMENT_EVENT_SET_TEXT_CONTEXT = 1008;
+    public final static int FRAGMENT_EVENT_SET_SPEED = 1009;
+    public final static int FRAGMENT_EVENT_SET_ACTION_MODE = 1010;
+    public final static int FRAGMENT_EVENT_SET_COLOR_MODE = 1011;
+
 }

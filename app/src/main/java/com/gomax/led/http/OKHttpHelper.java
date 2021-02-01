@@ -60,6 +60,18 @@ public class OKHttpHelper {
                     case FragmentHelper.FRAGMENT_EVENT_SET_TEXT_CONTEXT:
                         FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_TEXT_CONTEXT, 0, -1, response.body().string()).sendToTarget();
                         break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_SPEED:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_SPEED, 0, -1, response.body().string()).sendToTarget();
+                        break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_ACTION_MODE:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_ACTION_MODE, 0, -1, response.body().string()).sendToTarget();
+                        break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_COLOR_MODE:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_COLOR_MODE, 0, -1, response.body().string()).sendToTarget();
+                        break;
                 }
             }
 
@@ -82,6 +94,18 @@ public class OKHttpHelper {
 
                     case FragmentHelper.FRAGMENT_EVENT_SET_TEXT_CONTEXT:
                         FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_TEXT_CONTEXT, 0, -1, error_feedback_json).sendToTarget();
+                        break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_SPEED:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_SPEED, 0, -1, error_feedback_json).sendToTarget();
+                        break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_ACTION_MODE:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_ACTION_MODE, 0, -1, error_feedback_json).sendToTarget();
+                        break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_COLOR_MODE:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_COLOR_MODE, 0, -1, error_feedback_json).sendToTarget();
                         break;
                 }
             }
