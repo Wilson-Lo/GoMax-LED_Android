@@ -118,6 +118,29 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
                             Toast.makeText(MainActivity.mActivity.get(), "Get system info failed !", Toast.LENGTH_LONG).show();
                         } else {
 
+                            //set action mode
+                            if (jsonObject.has(CmdHelper.JSON_KEY_LED_MODE)) {
+                                Log.d(TAG, "action mode = " + jsonObject.getString(CmdHelper.JSON_KEY_LED_MODE));
+                                dropDownPreferenceMode.setValue(jsonObject.getString(CmdHelper.JSON_KEY_LED_MODE));
+                            }
+
+                            //set speed
+                            if (jsonObject.has(CmdHelper.JSON_KEY_LED_MODE)) {
+                                Log.d(TAG, "speed = " + jsonObject.getString(CmdHelper.JSON_KEY_SPEED));
+                                dropDownPreferenceSpeed.setValue(jsonObject.getString(CmdHelper.JSON_KEY_SPEED));
+                            }
+
+                            //set color mode
+                            if (jsonObject.has(CmdHelper.JSON_KEY_VIVID)) {
+                                Log.d(TAG, "vivid = " + jsonObject.getBoolean(CmdHelper.JSON_KEY_VIVID));
+                                switchPreferenceColorMode.setChecked(jsonObject.getBoolean(CmdHelper.JSON_KEY_VIVID));
+                            }
+
+                            //set text content
+                            if (jsonObject.has(CmdHelper.JSON_KEY_TEXT_CONTENT)) {
+                                Log.d(TAG, "text content = " + jsonObject.getString(CmdHelper.JSON_KEY_TEXT_CONTENT));
+                                editTextPreferenceTextContent.setText(jsonObject.getString(CmdHelper.JSON_KEY_TEXT_CONTENT));
+                            }
 
                             //set background rgb
                             if (jsonObject.has(CmdHelper.JSON_KEY_BACKGROUND_RGB)) {
@@ -136,7 +159,6 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
                                 int colorInt = Color.parseColor(hex);
                                 textColorPreference.saveValue(colorInt);
                             }
-
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

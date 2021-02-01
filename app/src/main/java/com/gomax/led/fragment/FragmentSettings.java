@@ -286,7 +286,6 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
 
                 case FragmentHelper.FRAGMENT_EVENT_UDP_IP:
                     Log.d(TAG, "FRAGMENT_EVENT_UDP_IP");
-                    //int numOfBytesReceived = msg.arg1;
                     final String deviceIP = (String) msg.obj;
                     Log.d(TAG, "Selected IP = " + deviceIP);
                     editor.putString(CmdHelper.SHAREDPREFERENCE_KEY_IP, deviceIP).apply();
@@ -308,8 +307,8 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
                         if (jsonObject.has(CmdHelper.JSON_KEY_RESULT)) {
                             Toast.makeText(MainActivity.mActivity.get(), "Get system info failed ! \n\n Please to scan new devices.", Toast.LENGTH_LONG).show();
                         } else {
-                            textInputEditTextHostname.setText(jsonObject.getString("hostname"));
-                            textInputEditTextIP.setText(jsonObject.getString("ip"));
+                            textInputEditTextHostname.setText(jsonObject.getString(CmdHelper.JSON_KEY_HOSTNAME));
+                            textInputEditTextIP.setText(jsonObject.getString(CmdHelper.JSON_KEY_IP));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
