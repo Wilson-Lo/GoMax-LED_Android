@@ -64,8 +64,6 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
         super.onCreate(savedInstanceState);
     }
 
-
-
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.fragment_system_preference_screeen, rootKey);
@@ -87,9 +85,7 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
 
         backgroundColorPreference = (ColorPreferenceCompat) findPreference(getString(R.string.preference_key_background_color));
         backgroundColorPreference.setOnPreferenceChangeListener(this);
-
     }
-
 
     @Override
     public void onStart() {
@@ -140,7 +136,6 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
                                 int colorInt = Color.parseColor(hex);
                                 textColorPreference.saveValue(colorInt);
                             }
-
 
                         }
                     } catch (JSONException e) {
@@ -236,7 +231,6 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
             super.handleMessage(msg);
         }
     };
-
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -377,6 +371,5 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
         config.locale = locale;
         getContext().getResources().updateConfiguration(config, getContext().getResources().getDisplayMetrics());
     }
-
 }
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LED</string>
+    <string name="app_name">Marquee</string>
     <string name="preference_key_text_color">TEXT_COLOR</string>
     <string name="preference_key_background_color">BACKGROUND_COLOR</string>
     <string name="preference_key_action_mode">ACTION_MODE</string>

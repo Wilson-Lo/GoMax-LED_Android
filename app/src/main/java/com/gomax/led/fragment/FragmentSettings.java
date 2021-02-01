@@ -86,6 +86,17 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void onStart() {
+        new Thread() {
+            @Override
+            public void run() {
+                new OKHttpHelper(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""), "api/led/all", FragmentHelper.FRAGMENT_EVENT_GET_ALL_SETTINGS).methodGet();
+            }
+        }.start();
+        super.onStart();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -161,12 +172,6 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
                 break;
         }
     }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
 
     @Override
     public void onPause() {
@@ -296,15 +301,15 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
                     dialogDeviceList.cancel();
                     break;
 
-
                 case FragmentHelper.FRAGMENT_EVENT_GET_ALL_SETTINGS:
                     Log.d(TAG, "FRAGMENT_EVENT_GET_SETTINGS " + (String) msg.obj);
                     try {
                         JSONObject jsonObject = new JSONObject((String) msg.obj);
                         if (jsonObject.has(CmdHelper.JSON_KEY_RESULT)) {
-
+                            Toast.makeText(MainActivity.mActivity.get(), "Get system info failed ! \n\n Please to scan new devices.", Toast.LENGTH_LONG).show();
                         } else {
                             textInputEditTextHostname.setText(jsonObject.getString("hostname"));
+                            textInputEditTextIP.setText(jsonObject.getString("ip"));
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -329,5 +334,6 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
             super.handleMessage(msg);
         }
     };
+
 }
 
