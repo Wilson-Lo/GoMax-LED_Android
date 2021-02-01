@@ -14,4 +14,6 @@ public class FragmentHelper {
     public final static int FRAGMENT_EVENT_GET_ALL_SETTINGS = 1003;
     public final static int FRAGMENT_EVENT_POST_HOSTNAME = 1004;
     public final static int FRAGMENT_EVENT_GET_ALL_SYSTEM = 1005;
+    public final static int FRAGMENT_EVENT_SET_BACKGROUND_RGB = 1006;
+    public final static int FRAGMENT_EVENT_SET_TEXT_RGB = 1007;
 }

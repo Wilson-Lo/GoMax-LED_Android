@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -16,6 +17,7 @@ import com.gomax.led.http.OKHttpHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 import me.majiajie.pagerbottomtabstrip.NavigationController;
 import me.majiajie.pagerbottomtabstrip.PageNavigationView;
@@ -66,10 +68,7 @@ public class MainActivity extends AppCompatActivity {
         replaceFragments(FragmentSystem.class);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
+
 
     /**
      * Replace container fragment

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <DropDownPreference
+        android:key="@string/preference_key_action_mode"
+        android:title="Action Mode"
+        app:useSimpleSummaryProvider="true"
+        android:entries="@array/mode_array"
+        android:entryValues="@array/mode_value_array"/>
+
+    <androidx.preference.SwitchPreference
+        android:key="@string/preference_key_color_mode"
+        android:defaultValue="true"
+        android:title="Color Mode"
+        android:summary="To make text colorful"/>
+
+    <DropDownPreference
+        android:key="@string/preference_key_speed"
+        android:title="Speed"
+        app:useSimpleSummaryProvider="true"
+        android:entries="@array/speed_array"
+        android:entryValues="@array/speed_array"/>
+
+    <EditTextPreference
+        android:key="@string/preference_key_text_content"
+        android:title="Text Content"
+        app:useSimpleSummaryProvider="true"
+        android:dialogTitle=""/>
+
+    <com.jaredrummler.android.colorpicker.ColorPreferenceCompat
+        android:key="@string/preference_key_background_color"
+        app:useSimpleSummaryProvider="true"
+        android:title="Background Color"/>
+
+    <com.jaredrummler.android.colorpicker.ColorPreferenceCompat
+        android:key="@string/preference_key_text_color"
+        app:useSimpleSummaryProvider="true"
+        android:title="Text Color"/>
+
+</androidx.preference.PreferenceScreen>

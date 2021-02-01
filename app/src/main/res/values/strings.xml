@@ -1,3 +1,34 @@
 <resources>
     <string name="app_name">LED</string>
+    <string name="preference_key_text_color">TEXT_COLOR</string>
+    <string name="preference_key_background_color">BACKGROUND_COLOR</string>
+    <string name="preference_key_action_mode">ACTION_MODE</string>
+    <string name="preference_key_color_mode">COLOR_MODE</string>
+    <string name="preference_key_text_content">TEXT_CONTENT</string>
+    <string name="preference_key_speed">SPEED</string>
+
+    <string-array name="speed_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+
+    <string-array name="mode_array">
+        <item>No Action</item>
+        <item>Running</item>
+        <item>Wave</item>
+        <item>Running and Wave</item>
+        <item>GIF</item>
+    </string-array>
+
+    <string-array name="mode_value_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
 </resources>

@@ -148,7 +148,8 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
                         new Thread() {
                             @Override
                             public void run() {
-                                new OKHttpHelper(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""), "api/led/hostname", FragmentHelper.FRAGMENT_EVENT_POST_HOSTNAME).methodPost(jsonBody);
+                                new OKHttpHelper(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""),
+                                        "api/led/hostname", FragmentHelper.FRAGMENT_EVENT_POST_HOSTNAME).methodPost(jsonBody);
                             }
                         }.start();
                     } else {

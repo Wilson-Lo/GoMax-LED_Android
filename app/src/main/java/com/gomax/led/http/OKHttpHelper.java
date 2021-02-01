@@ -22,7 +22,8 @@ public class OKHttpHelper {
     private OkHttpClient client;
     private String url = "";
     private int cmdNumber = 0;
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final String error_feedback_json = "{\"result\": \"failed\"\n}";
 
     public OKHttpHelper(String deviceIP, String cmd, int cmdNumber) {
         this.cmdNumber = cmdNumber;
@@ -47,6 +48,14 @@ public class OKHttpHelper {
                     case FragmentHelper.FRAGMENT_EVENT_POST_HOSTNAME:
                         FragmentSettings.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_POST_HOSTNAME, 0, -1, response.body().string()).sendToTarget();
                         break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_BACKGROUND_RGB:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_BACKGROUND_RGB, 0, -1, response.body().string()).sendToTarget();
+                        break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_TEXT_RGB:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_TEXT_RGB, 0, -1, response.body().string()).sendToTarget();
+                        break;
                 }
             }
 
@@ -54,7 +63,15 @@ public class OKHttpHelper {
                 Log.d(TAG, "failed " + e.getMessage());
                 switch (cmdNumber) {
                     case FragmentHelper.FRAGMENT_EVENT_POST_HOSTNAME:
-                        FragmentSettings.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_POST_HOSTNAME, 0, -1, "{\"result\": \"failed\"\n}").sendToTarget();
+                        FragmentSettings.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_POST_HOSTNAME, 0, -1, error_feedback_json).sendToTarget();
+                        break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_BACKGROUND_RGB:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_BACKGROUND_RGB, 0, -1, error_feedback_json).sendToTarget();
+                        break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_TEXT_RGB:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_TEXT_RGB, 0, -1, error_feedback_json).sendToTarget();
                         break;
                 }
             }
