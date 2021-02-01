@@ -2,6 +2,8 @@ package com.gomax.led.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -62,6 +65,7 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
     private ImageButton imageButtonHostname;
     private static SharedPreferences pref;
     private static SharedPreferences.Editor editor;
+    private TextView txVer;
 
     public static FragmentSettings newInstance(int index) {
         FragmentSettings fm = new FragmentSettings();
@@ -102,6 +106,8 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_settings_layout, container, false);
         AppCompatActivity mActivity = (AppCompatActivity) getActivity();
+        txVer = (TextView) rootView.findViewById(R.id.tx_ver);
+        txVer.setText("APP Ver. " + getVersionName());
         textInputEditTextIP = (TextInputEditText) rootView.findViewById(R.id.textinput_ip);
         textInputEditTextHostname = (TextInputEditText) rootView.findViewById(R.id.textinput_hostname);
         imageButtonHostname = (ImageButton) rootView.findViewById(R.id.image_bt_hostname_apply);
@@ -333,6 +339,25 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
             super.handleMessage(msg);
         }
     };
+
+    /**
+     * get app version name
+     *
+     * @return : version name
+     */
+    public static String getVersionName() {
+        PackageManager packageManager = MainActivity.mActivity.get().getPackageManager();
+        PackageInfo packInfo = null;
+        try {
+            packInfo = packageManager.getPackageInfo(MainActivity.mActivity.get().getPackageName(), 0);
+            Log.d(TAG, "" + packInfo.versionCode);
+            Log.d(TAG, "" + packInfo.versionName);
+            return packInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 
 }
 
