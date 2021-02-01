@@ -56,11 +56,17 @@ public class OKHttpHelper {
                     case FragmentHelper.FRAGMENT_EVENT_SET_TEXT_RGB:
                         FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_TEXT_RGB, 0, -1, response.body().string()).sendToTarget();
                         break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_TEXT_CONTEXT:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_TEXT_CONTEXT, 0, -1, response.body().string()).sendToTarget();
+                        break;
                 }
             }
 
             public void onFailure(Call call, IOException e) {
+
                 Log.d(TAG, "failed " + e.getMessage());
+
                 switch (cmdNumber) {
                     case FragmentHelper.FRAGMENT_EVENT_POST_HOSTNAME:
                         FragmentSettings.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_POST_HOSTNAME, 0, -1, error_feedback_json).sendToTarget();
@@ -72,6 +78,10 @@ public class OKHttpHelper {
 
                     case FragmentHelper.FRAGMENT_EVENT_SET_TEXT_RGB:
                         FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_TEXT_RGB, 0, -1, error_feedback_json).sendToTarget();
+                        break;
+
+                    case FragmentHelper.FRAGMENT_EVENT_SET_TEXT_CONTEXT:
+                        FragmentSystem.commandHandler.obtainMessage(FragmentHelper.FRAGMENT_EVENT_SET_TEXT_CONTEXT, 0, -1, error_feedback_json).sendToTarget();
                         break;
                 }
             }

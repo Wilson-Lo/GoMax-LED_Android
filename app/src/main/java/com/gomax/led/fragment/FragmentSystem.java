@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -36,8 +37,8 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
     private static final String TAG = "FragmentSystem";
     private static SharedPreferences pref;
     private static SharedPreferences.Editor editor;
-    private Toolbar toolbar;
     private static ColorPreferenceCompat textColorPreference, backgroundColorPreference;
+    private static EditTextPreference editTextPreference;
     private static boolean isTextColorInitial = true;
     private static boolean isBackgroundColorInitial = true;
 
@@ -60,6 +61,9 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.fragment_system_preference_screeen, rootKey);
+
+        editTextPreference = (EditTextPreference) findPreference(getString(R.string.preference_key_text_content));
+        editTextPreference.setOnPreferenceChangeListener(this);
 
         textColorPreference = (ColorPreferenceCompat) findPreference(getString(R.string.preference_key_text_color));
         textColorPreference.setOnPreferenceChangeListener(this);
@@ -154,6 +158,20 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
                         e.printStackTrace();
                     }
                     break;
+
+                case FragmentHelper.FRAGMENT_EVENT_SET_TEXT_CONTEXT:
+                    Log.d(TAG, "FRAGMENT_EVENT_SET_TEXT_CONTEXT " + (String) msg.obj);
+                    try {
+                        JSONObject jsonObject = new JSONObject((String) msg.obj);
+                        if (jsonObject.getString(CmdHelper.JSON_KEY_RESULT).equals("ok")) {
+                            Toast.makeText(MainActivity.mActivity.get(), "Set text context successful !", Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(MainActivity.mActivity.get(), "Set text context failed !", Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    break;
             }
 
             super.handleMessage(msg);
@@ -163,17 +181,16 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        String newDefaultColor = Integer.toHexString((int) newValue);
 
         switch (preference.getKey()) {
 
             case "BACKGROUND_COLOR":
-                Log.d(TAG, "BACKGROUND_COLOR : #" + newDefaultColor);
+                Log.d(TAG, "BACKGROUND_COLOR : #" + Integer.toHexString((int) newValue));
 
                 if (isBackgroundColorInitial) {
                     isBackgroundColorInitial = false;
                 } else {
-                    int b_color = (int) Long.parseLong("" + newDefaultColor, 16);
+                    int b_color = (int) Long.parseLong("" + Integer.toHexString((int) newValue), 16);
                     int b_r = (b_color >> 16) & 0xFF;
                     int b_g = (b_color >> 8) & 0xFF;
                     int b_b = (b_color >> 0) & 0xFF;
@@ -196,12 +213,12 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
                 break;
 
             case "TEXT_COLOR":
-                Log.d(TAG, "TEXT_COLOR : #" + newDefaultColor);
+                Log.d(TAG, "TEXT_COLOR : #" + Integer.toHexString((int) newValue));
 
                 if (isTextColorInitial) {
                     isTextColorInitial = false;
                 } else {
-                    int t_color = (int) Long.parseLong("" + newDefaultColor, 16);
+                    int t_color = (int) Long.parseLong("" + Integer.toHexString((int) newValue), 16);
                     int t_r = (t_color >> 16) & 0xFF;
                     int t_g = (t_color >> 8) & 0xFF;
                     int t_b = (t_color >> 0) & 0xFF;
@@ -223,6 +240,20 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
                     }.start();
                 }
                 break;
+
+            case "TEXT_CONTENT":
+                Log.d(TAG, "TEXT_CONTENT : " + newValue.toString());
+
+                final String jsonBody_text = "{\"content\": \"" + newValue.toString() + "\"}";
+
+                new Thread() {
+                    @Override
+                    public void run() {
+                        new OKHttpHelper(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""), "api/led/text",
+                                FragmentHelper.FRAGMENT_EVENT_SET_TEXT_CONTEXT).methodPost(jsonBody_text);
+                    }
+                }.start();
+                break;
         }
         return true;
     }
@@ -238,7 +269,6 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
         config.locale = locale;
         getContext().getResources().updateConfiguration(config, getContext().getResources().getDisplayMetrics());
     }
-
 
 }
 
