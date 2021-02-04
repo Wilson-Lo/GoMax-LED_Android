@@ -53,6 +53,7 @@
                 android:hint="Hostname"
                 android:inputType="text"
                 android:singleLine="true"
+                android:textSize="@dimen/sp_16"
                 android:text="" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -65,8 +66,8 @@
 
             <ImageButton
                 android:id="@+id/image_bt_hostname_apply"
-                android:layout_width="@dimen/dp_22"
-                android:layout_height="@dimen/dp_22"
+                android:layout_width="@dimen/dp_18"
+                android:layout_height="@dimen/dp_18"
                 android:background="@drawable/check"
                 android:clickable="true" />
 
@@ -95,6 +96,7 @@
                 android:hint="IP"
                 android:inputType="text"
                 android:singleLine="true"
+                android:textSize="@dimen/sp_16"
                 android:text=""
                 app:hintTextAppearance="@style/TextLabel" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -111,7 +113,7 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:gravity="center"
-            android:textSize="@dimen/dp_12"
+            android:textSize="@dimen/sp_7"
             android:text="Marquee and your Android device must be located in the same network." >
         </TextView>
 
@@ -129,7 +131,7 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:gravity="center"
-            android:textSize="@dimen/dp_12"
+            android:textSize="@dimen/sp_7"
             android:text="APP  ver." >
         </TextView>
 

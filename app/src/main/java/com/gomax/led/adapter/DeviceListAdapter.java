@@ -12,13 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gomax.led.R;
 import com.gomax.led.fragment.FragmentHelper;
 import com.gomax.led.fragment.FragmentSettings;
+import com.gomax.led.object.UDPDeviceObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.DeviceListViewHolder> {
 
-    public ArrayList<String> deviceObjectList;
+    private ArrayList<String> udpDeviceMACIndexList;
+    public HashMap<String, UDPDeviceObject> deviceObjectList;
     private final String TAG = "DeviceListAdapter";
     private Context mContext;
 
@@ -35,8 +38,9 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public DeviceListAdapter(Context context, ArrayList<String> deviceObjectList) {
+    public DeviceListAdapter(Context context, HashMap<String, UDPDeviceObject> deviceObjectList, ArrayList<String> udpDeviceMACIndexList) {
         this.deviceObjectList = deviceObjectList;
+        this.udpDeviceMACIndexList = udpDeviceMACIndexList;
         this.mContext = context;
     }
 
@@ -55,7 +59,8 @@ public class DeviceListAdapter extends RecyclerView.Adapter<DeviceListAdapter.De
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(DeviceListViewHolder holder, final int position) {
-        holder.textViewDeviceIP.setText(deviceObjectList.get(position));
+        String macIndex = this.udpDeviceMACIndexList.get(position);
+        holder.textViewDeviceIP.setText(deviceObjectList.get(macIndex).getIP());
         holder.textViewDeviceName.setText("LED");
         final String ip = holder.textViewDeviceIP.getText().toString();
         holder.itemView.setOnClickListener(new View.OnClickListener() {

@@ -92,12 +92,17 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
         setSystemLanguage("en");
         isTextColorInitial = true;
         isBackgroundColorInitial = true;
-        new Thread() {
-            @Override
-            public void run() {
-                new OKHttpHelper(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""), "api/led/all", FragmentHelper.FRAGMENT_EVENT_GET_ALL_SYSTEM).methodGet();
-            }
-        }.start();
+
+        if(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, "").length() > 0){
+            new Thread() {
+                @Override
+                public void run() {
+                    new OKHttpHelper(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""), "api/led/all", FragmentHelper.FRAGMENT_EVENT_GET_ALL_SYSTEM).methodGet();
+                }
+            }.start();
+        }else{
+            MainActivity.replaceFragments(FragmentSettings.class);
+        }
         super.onStart();
     }
 
@@ -117,7 +122,7 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
                         if (jsonObject.has(CmdHelper.JSON_KEY_RESULT)) {
                             Toast.makeText(MainActivity.mActivity.get(), "Get system info failed !", Toast.LENGTH_LONG).show();
                         } else {
-
+                            Log.d(TAG, "initial setting");
                             //set action mode
                             if (jsonObject.has(CmdHelper.JSON_KEY_LED_MODE)) {
                                 Log.d(TAG, "action mode = " + jsonObject.getString(CmdHelper.JSON_KEY_LED_MODE));
@@ -162,6 +167,7 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        Log.d(TAG, "initial json error !");
                     }
                     break;
 

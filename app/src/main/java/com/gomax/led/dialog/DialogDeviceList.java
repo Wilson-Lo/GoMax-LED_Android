@@ -12,27 +12,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.gomax.led.R;
 import com.gomax.led.adapter.DeviceListAdapter;
 import com.gomax.led.data.DeviceObject;
+import com.gomax.led.object.UDPDeviceObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DialogDeviceList {
 
     private Dialog dialog;
     private Context mContext;
     private Window window;
-    private ArrayList<String> deviceObjectList;
+    private HashMap<String, UDPDeviceObject> deviceObjectList;
     private DeviceListAdapter deviceListAdapter;
     private RecyclerView sourceListRecyclerView;
+    private ArrayList<String> udpDeviceMACIndexList;
 
-    public DialogDeviceList(Context context, ArrayList<String> deviceObjectList) {
+    public DialogDeviceList(Context context, HashMap<String, UDPDeviceObject> deviceObjectList, ArrayList<String> udpDeviceMACIndexList) {
         this.mContext = context;
         this.deviceObjectList = deviceObjectList;
+        this.udpDeviceMACIndexList = udpDeviceMACIndexList;
         setupUI();
     }
 
     //setup UI
     private void setupUI() {
-        this.deviceListAdapter = new DeviceListAdapter(this.mContext, deviceObjectList);
+        this.deviceListAdapter = new DeviceListAdapter(this.mContext, this.deviceObjectList, this.udpDeviceMACIndexList);
         this.dialog = new Dialog(this.mContext);
         this.window = dialog.getWindow();
         this.dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

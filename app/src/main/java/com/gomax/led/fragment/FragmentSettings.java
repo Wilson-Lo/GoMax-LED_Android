@@ -27,11 +27,11 @@ import androidx.fragment.app.Fragment;
 
 import com.gomax.led.BuildConfig;
 import com.gomax.led.R;
-import com.gomax.led.adapter.DeviceListAdapter;
 import com.gomax.led.dialog.DialogDeviceList;
 import com.gomax.led.http.CmdHelper;
 import com.gomax.led.http.OKHttpHelper;
 import com.gomax.led.main.MainActivity;
+import com.gomax.led.object.UDPDeviceObject;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONException;
@@ -43,8 +43,11 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -55,11 +58,14 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
     private static final String TAG = "FragmentSettings";
     private Thread receiveUPDThread;
     private DatagramSocket clientReceiveSocket = null;
-    private String UPD_COMMAND = "led_ip";
+    private HashMap<String, UDPDeviceObject> udpHashMap;
+    private String AESKey = "qzy159pkn333rty2";
+    private byte[] cmd = {(byte) 0x00, (byte) 0x0b, (byte) 0x80, (byte) 0x00, (byte) 0x45,
+            (byte) 0x54, (byte) 0x48, (byte) 0x5f, (byte) 0x52, (byte) 0x45, (byte) 0x51
+            , (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
     private Toolbar toolbar;
+    private ArrayList<String> udpDeviceMACIndexList;
     private static SweetAlertDialog pDialog;
-    private static ArrayList<String> deviceObjectList;
-    private DeviceListAdapter deviceListAdapter;
     private static DialogDeviceList dialogDeviceList;
     private static TextInputEditText textInputEditTextIP, textInputEditTextHostname;
     private ImageButton imageButtonHostname;
@@ -82,8 +88,8 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
         editor = pref.edit();
         receiveUPDThread = new Thread(new ReceiveUDPTask());
         receiveUPDThread.start();
-        deviceObjectList = new ArrayList<>();
-        deviceListAdapter = new DeviceListAdapter(getContext(), deviceObjectList);
+        udpDeviceMACIndexList = new ArrayList<>();
+        udpHashMap = new HashMap<>();
         pDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
         pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
         pDialog.setCancelable(false);
@@ -92,12 +98,17 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
 
     @Override
     public void onStart() {
-        new Thread() {
-            @Override
-            public void run() {
-                new OKHttpHelper(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""), "api/led/all", FragmentHelper.FRAGMENT_EVENT_GET_ALL_SETTINGS).methodGet();
-            }
-        }.start();
+
+        if (pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, "").length() > 0) {
+            new Thread() {
+                @Override
+                public void run() {
+                    new OKHttpHelper(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""), "api/led/all", FragmentHelper.FRAGMENT_EVENT_GET_ALL_SETTINGS).methodGet();
+                }
+            }.start();
+        } else {
+            Toast.makeText(getContext(), "Please scan devices first !", Toast.LENGTH_LONG).show();
+        }
         super.onStart();
     }
 
@@ -132,13 +143,18 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
             case R.id.menu_scan:
                 pDialog.setTitleText("scan...");
                 pDialog.show();
-                deviceObjectList.clear();
-                new Thread(new SendUDPTask(UPD_COMMAND.getBytes(Charset.forName("UTF-8")))).start();
+                udpHashMap.clear();
+                udpDeviceMACIndexList.clear();
+                try {
+                    new Thread(new SendUDPTask(encrypt(AESKey.getBytes(), cmd))).start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (deviceObjectList.size() > 0) {
-                            dialogDeviceList = new DialogDeviceList(getContext(), deviceObjectList);
+                        if (udpHashMap.size() > 0) {
+                            dialogDeviceList = new DialogDeviceList(getContext(), udpHashMap, udpDeviceMACIndexList);
                             dialogDeviceList.show();
                         } else {
                             Toast.makeText(getContext(), "Can't find any devices !", Toast.LENGTH_LONG).show();
@@ -159,7 +175,7 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
 
             case R.id.image_bt_hostname_apply:
                 Log.d(TAG, "image_bt_hostname_apply " + pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""));
-                if (pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, "").equals("")) {
+                if (pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, "").length() > 0) {
                     if (textInputEditTextHostname.getText().length() > 0) {
                         final String jsonBody = "{\"hostname\":\"" + textInputEditTextHostname.getText() + "\"}";
                         new Thread() {
@@ -253,8 +269,29 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
                     try {
                         clientReceiveSocket.receive(receivePacket);
                         try {
-                            String IP = (new String(receiveData, "UTF-8")).replaceAll("\u0000.*", "");
-                            deviceObjectList.add(IP);
+                            byte[] data = decrypt(AESKey.getBytes(), receiveData);
+                            if (data.length >= 38) {
+                                String deviceName = "";
+                                for (int index = 5; index <= 20; index++) {
+                                    deviceName += hexStrArrayToASCII(byteToHexString(data[index]));
+                                }
+
+                                if (deviceName.replaceAll("\u0000.*", "").toLowerCase().contains("led")) {
+                                    String mac = byteToHexString(data[21]) + "-" + byteToHexString(data[22])
+                                            + "-" + byteToHexString(data[23]) + "-" + byteToHexString(data[24]) + "-" + byteToHexString(data[25]) + "-" + byteToHexString(data[26]);
+                                    String ip = byte2Int(data[27]) + "." + byte2Int(data[28]) + "." + byte2Int(data[29]) + "." + byte2Int(data[30]);
+                                    String mask = byte2Int(data[31]) + "." + byte2Int(data[32]) + "." + byte2Int(data[33]) + "." + byte2Int(data[34]);
+                                    String gateway = byte2Int(data[35]) + "." + byte2Int(data[36]) + "." + byte2Int(data[37]) + "." + byte2Int(data[38]);
+                                    Log.d(TAG, "recevive device..." + deviceName.replaceAll("\u0000.*", ""));
+                                    if (udpHashMap.containsKey(mac)) {
+                                    } else {
+                                        udpDeviceMACIndexList.add(mac);
+                                        udpHashMap.put(mac, new UDPDeviceObject(deviceName, mac, ip, gateway, mask));
+                                    }
+                                } else {
+                                    Log.d(TAG, "not LED");
+                                }
+                            }
                         } catch (Exception e) {
                             Log.d(TAG, "udp listen error1 : " + e.getMessage());
                             e.printStackTrace();
@@ -357,6 +394,73 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
             e.printStackTrace();
             return "";
         }
+    }
+
+    /**
+     * AES encode
+     *
+     * @param raw   : AES Key
+     * @param clear : want to encode data
+     * @return : AES encode data
+     * @throws Exception
+     */
+    private static byte[] encrypt(byte[] raw, byte[] clear) throws Exception {
+        SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+        byte[] encrypted = cipher.doFinal(clear);
+        return encrypted;
+    }
+
+    /**
+     * AES decode
+     *
+     * @param raw       : AES Key
+     * @param encrypted : want to decode data
+     * @return : AES decode data
+     * @throws Exception
+     */
+    private static byte[] decrypt(byte[] raw, byte[] encrypted) throws Exception {
+        SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+        Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+        byte[] decrypted = cipher.doFinal(encrypted);
+        return decrypted;
+    }
+
+    /**
+     * Byte data to hex string
+     *
+     * @param byteData : Byte data
+     * @return : hex string of byte data
+     */
+    private static String byteToHexString(Byte byteData) {
+        return String.format("%02x", byteData).toUpperCase();
+    }
+
+    /**
+     * byte (hex) to int
+     *
+     * @param data : Byte data (hex)
+     * @return : int of byte data (hex)
+     */
+    private static int byte2Int(byte data) {
+        return data & 0xFF;
+    }
+
+    /**
+     * convert hex string to ASCII string
+     *
+     * @param hex_data : server feedback hex string
+     * @return : convert to hex string
+     */
+    public static String hexStrArrayToASCII(String hex_data) {
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < hex_data.length(); i += 2) {
+            String str = hex_data.substring(i, i + 2);
+            output.append((char) Integer.parseInt(str, 16));
+        }
+        return output.toString();
     }
 
 }
