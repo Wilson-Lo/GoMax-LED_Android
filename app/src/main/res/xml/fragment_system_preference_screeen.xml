@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <DropDownPreference
+    <ListPreference
         android:key="@string/preference_key_action_mode"
         android:title="Action Mode"
         app:useSimpleSummaryProvider="true"
@@ -19,7 +19,7 @@
         app:allowDividerBelow="true"
         android:summary="To make text colorful"/>
 
-    <DropDownPreference
+    <ListPreference
         android:key="@string/preference_key_speed"
         android:title="Speed"
         app:useSimpleSummaryProvider="true"

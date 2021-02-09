@@ -240,7 +240,6 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
                     if (BuildConfig.DEBUG)
                         Log.d(TAG, "\nFailed 2 = " + e.getMessage());
                 }
-
                 clientSocket.close();
             } catch (SocketException se) {
                 if (BuildConfig.DEBUG)
@@ -297,7 +296,9 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
                             e.printStackTrace();
                         }
                     } catch (IOException e) {
-                        clientReceiveSocket.close();
+                        if(clientReceiveSocket != null){
+                            clientReceiveSocket.close();
+                        }
                         Log.d(TAG, "udp listen error2 : " + e.getMessage());
                         // TODO Auto-generated catch block
                         e.printStackTrace();

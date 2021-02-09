@@ -8,15 +8,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.preference.DropDownPreference;
 import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
@@ -43,7 +40,7 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
     private static SharedPreferences.Editor editor;
     private static ColorPreferenceCompat textColorPreference, backgroundColorPreference;
     private static EditTextPreference editTextPreferenceTextContent;
-    private static DropDownPreference dropDownPreferenceMode, dropDownPreferenceSpeed;
+    private static ListPreference dropDownPreferenceMode, dropDownPreferenceSpeed;
     private static SwitchPreference switchPreferenceColorMode;
     private static boolean isTextColorInitial = true;
     private static boolean isBackgroundColorInitial = true;
@@ -71,10 +68,10 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
         switchPreferenceColorMode = (SwitchPreference) findPreference(getString(R.string.preference_key_color_mode));
         switchPreferenceColorMode.setOnPreferenceChangeListener(this);
 
-        dropDownPreferenceMode = (DropDownPreference) findPreference(getString(R.string.preference_key_action_mode));
+        dropDownPreferenceMode = (ListPreference) findPreference(getString(R.string.preference_key_action_mode));
         dropDownPreferenceMode.setOnPreferenceChangeListener(this);
 
-        dropDownPreferenceSpeed = (DropDownPreference) findPreference(getString(R.string.preference_key_speed));
+        dropDownPreferenceSpeed = (ListPreference) findPreference(getString(R.string.preference_key_speed));
         dropDownPreferenceSpeed.setOnPreferenceChangeListener(this);
 
         editTextPreferenceTextContent = (EditTextPreference) findPreference(getString(R.string.preference_key_text_content));
@@ -93,14 +90,14 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
         isTextColorInitial = true;
         isBackgroundColorInitial = true;
 
-        if(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, "").length() > 0){
+        if (pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, "").length() > 0) {
             new Thread() {
                 @Override
                 public void run() {
                     new OKHttpHelper(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""), "api/led/all", FragmentHelper.FRAGMENT_EVENT_GET_ALL_SYSTEM).methodGet();
                 }
             }.start();
-        }else{
+        } else {
             MainActivity.replaceFragments(FragmentSettings.class);
         }
         super.onStart();
@@ -126,13 +123,43 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
                             //set action mode
                             if (jsonObject.has(CmdHelper.JSON_KEY_LED_MODE)) {
                                 Log.d(TAG, "action mode = " + jsonObject.getString(CmdHelper.JSON_KEY_LED_MODE));
-                                dropDownPreferenceMode.setValue(jsonObject.getString(CmdHelper.JSON_KEY_LED_MODE));
+                                  if(jsonObject.getString(CmdHelper.JSON_KEY_LED_MODE).length() > 0){
+                                      dropDownPreferenceMode.setValueIndex(Integer.parseInt(jsonObject.getString(CmdHelper.JSON_KEY_LED_MODE)));
+                                  }
                             }
 
-                            //set speed
-                            if (jsonObject.has(CmdHelper.JSON_KEY_LED_MODE)) {
+                           //set speed
+                            if (jsonObject.has(CmdHelper.JSON_KEY_SPEED)) {
                                 Log.d(TAG, "speed = " + jsonObject.getString(CmdHelper.JSON_KEY_SPEED));
-                                dropDownPreferenceSpeed.setValue(jsonObject.getString(CmdHelper.JSON_KEY_SPEED));
+                                if(jsonObject.getString(CmdHelper.JSON_KEY_SPEED).length() > 0){
+
+                                    switch(Integer.parseInt(jsonObject.getString(CmdHelper.JSON_KEY_SPEED))){
+
+                                        case 0:
+                                            dropDownPreferenceSpeed.setValueIndex(5);
+                                            break;
+
+                                        case 1:
+                                            dropDownPreferenceSpeed.setValueIndex(4);
+                                            break;
+
+                                        case 2:
+                                            dropDownPreferenceSpeed.setValueIndex(3);
+                                            break;
+
+                                        case 3:
+                                            dropDownPreferenceSpeed.setValueIndex(2);
+                                            break;
+
+                                        case 4:
+                                            dropDownPreferenceSpeed.setValueIndex(1);
+                                            break;
+
+                                        case 5:
+                                            dropDownPreferenceSpeed.setValueIndex(0);
+                                            break;
+                                    }
+                                }
                             }
 
                             //set color mode
@@ -335,6 +362,7 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
 
             Log.d(TAG, "SPEED : " + newValue);
 
+
             final String jsonBody_text = "{\"speed\": " + newValue + "}";
 
             new Thread() {
@@ -344,6 +372,7 @@ public class FragmentSystem extends PreferenceFragmentCompat implements Preferen
                             FragmentHelper.FRAGMENT_EVENT_SET_SPEED).methodPost(jsonBody_text);
                 }
             }.start();
+
 
         } else if (preference.getKey().equals(getContext().getResources().getString(R.string.preference_key_action_mode))) {
 
