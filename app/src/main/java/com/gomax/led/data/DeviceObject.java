@@ -7,7 +7,6 @@ public class DeviceObject {
 
     private String strDevice_mac, strDevice_ip;
 
-
     public DeviceObject(String strDevice_mac, String strDevice_ip) {
         this.strDevice_mac = strDevice_mac;
         this.strDevice_ip = strDevice_ip;
