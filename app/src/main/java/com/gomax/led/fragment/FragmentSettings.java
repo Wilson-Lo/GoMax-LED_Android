@@ -1,6 +1,8 @@
 package com.gomax.led.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -175,22 +177,46 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
 
             case R.id.image_bt_hostname_apply:
                 Log.d(TAG, "image_bt_hostname_apply " + pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""));
-                if (pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, "").length() > 0) {
-                    if (textInputEditTextHostname.getText().length() > 0) {
-                        final String jsonBody = "{\"hostname\":\"" + textInputEditTextHostname.getText() + "\"}";
-                        new Thread() {
-                            @Override
-                            public void run() {
-                                new OKHttpHelper(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""),
-                                        "api/led/hostname", FragmentHelper.FRAGMENT_EVENT_POST_HOSTNAME).methodPost(jsonBody);
+                LayoutInflater inflater = this.getLayoutInflater();
+                View titleView = inflater.inflate(R.layout.notice_dialog_title_layout, null);
+
+                new AlertDialog.Builder(getContext())
+                        .setCustomTitle(titleView)
+                        .setMessage("Are you sure you want to do it ? ( will reboot LED device )")
+
+                        // Specifying a listener allows you to take an action before dismissing the dialog.
+                        // The dialog is automatically dismissed when a dialog button is clicked.
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, "").length() > 0) {
+                                    if (textInputEditTextHostname.getText().length() > 0) {
+                                        final String jsonBody = "{\"hostname\":\"" + textInputEditTextHostname.getText() + "\"}";
+                                        new Thread() {
+                                            @Override
+                                            public void run() {
+                                                new OKHttpHelper(pref.getString(CmdHelper.SHAREDPREFERENCE_KEY_IP, ""),
+                                                        "api/led/hostname", FragmentHelper.FRAGMENT_EVENT_POST_HOSTNAME).methodPost(jsonBody);
+                                            }
+                                        }.start();
+                                    } else {
+                                        Toast.makeText(getContext(), "Hostname can't be empty !", Toast.LENGTH_LONG).show();
+                                    }
+                                } else {
+                                    Toast.makeText(getContext(), "Please, scan device first !", Toast.LENGTH_LONG).show();
+                                }
                             }
-                        }.start();
-                    } else {
-                        Toast.makeText(getContext(), "Hostname can't be empty !", Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    Toast.makeText(getContext(), "Please, scan device first !", Toast.LENGTH_LONG).show();
-                }
+                        })
+
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Continue with delete operation
+                                dialog.dismiss();
+                            }
+                        })
+                        // A null listener allows the button to dismiss the dialog and take no further action.
+                        .setNegativeButton(android.R.string.no, null)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
                 break;
         }
     }
@@ -296,7 +322,7 @@ public class FragmentSettings extends Fragment implements View.OnClickListener {
                             e.printStackTrace();
                         }
                     } catch (IOException e) {
-                        if(clientReceiveSocket != null){
+                        if (clientReceiveSocket != null) {
                             clientReceiveSocket.close();
                         }
                         Log.d(TAG, "udp listen error2 : " + e.getMessage());

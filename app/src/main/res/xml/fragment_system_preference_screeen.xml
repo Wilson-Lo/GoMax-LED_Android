@@ -14,7 +14,7 @@
     <androidx.preference.SwitchPreference
         android:key="@string/preference_key_color_mode"
         android:defaultValue="true"
-        android:title="Color Mode"
+        android:title="Colorful Mode"
         app:allowDividerAbove="true"
         app:allowDividerBelow="true"
         android:summary="To make text colorful"/>
