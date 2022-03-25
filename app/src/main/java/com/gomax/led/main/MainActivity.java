@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         config.locale = locale;
         getResources().updateConfiguration(config, getResources().getDisplayMetrics());
         if (isNetworkConnected()) {
-            isAPPNeedToUpdate();
+           // isAPPNeedToUpdate();
         }
         super.onStart();
     }
@@ -145,9 +145,9 @@ public class MainActivity extends AppCompatActivity {
                     currentVersion = getVersionName();
                     //It retrieves the latest version by scraping the content of current version from play store at runtime
                     doc = Jsoup.connect(MARKET_URL).get();
-                    lastVersion = doc.getElementsByClass("htlgb").get(6).text();
+               //     lastVersion = doc.getElementsByClass("htlgb").get(6).text();
                     Log.d(TAG, "Your current version = " + currentVersion);
-                    Log.d(TAG, "get version from market  = " + lastVersion);
+                //    Log.d(TAG, "get version from market  = " + lastVersion);
                 } catch (IOException e) {
                     Log.d(TAG, "test error = " + e.getMessage());
                     // ConnectTypeActivity.uiHandler.obtainMessage(ERROR_INTERNET_EVENT, 0, -1, "Please check your's mobile internet connection and reopen App again !").sendToTarget();
